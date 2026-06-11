@@ -13,10 +13,15 @@ Proyecto universitario que simula el almacenamiento físico de una base de datos
 
 Abre **Developer Command Prompt for VS 2022** como administrador y ejecuta uno por uno:
 git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+
 cd C:\vcpkg
+
 bootstrap-vcpkg.bat
+
 vcpkg integrate install
+
 vcpkg install sfml:x64-windows
+
 vcpkg install imgui-sfml:x64-windows
 
 Esto puede tardar varios minutos.
