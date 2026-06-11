@@ -12,6 +12,7 @@ Proyecto universitario que simula el almacenamiento físico de una base de datos
 ## Instalación de vcpkg y dependencias
 
 Abre **Developer Command Prompt for VS 2022** como administrador y ejecuta uno por uno:
+
 git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
 
 cd C:\vcpkg
