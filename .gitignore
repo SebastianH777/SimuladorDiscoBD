@@ -67,3 +67,11 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+x64/
+Debug/
+Release/
+*.user
+*.suo
+*.aps
+imgui.ini
+.vs/
