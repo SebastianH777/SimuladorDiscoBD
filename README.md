@@ -27,6 +27,15 @@ vcpkg install imgui-sfml:x64-windows
 
 Esto puede tardar varios minutos.
 
+## Instalar SFML e ImGui
+
+En el mismo Developer Command Prompt ejecuta:
+
+    vcpkg install sfml:x64-windows
+    vcpkg install imgui-sfml:x64-windows
+
+Esto puede tardar varios minutos.
+
 ## Cómo abrir el proyecto
 
 1. Clona el repositorio:   git clone https://github.com/Klins18/SimuladorDiscoBD.git
