@@ -23,18 +23,11 @@ Esto puede tardar varios minutos.
 
 ## Cómo abrir el proyecto
 
-1. Clona el repositorio: git clone https://github.com/Klins18/SimuladorDiscoBD.git
+1. Clona el repositorio:   git clone https://github.com/Klins18/SimuladorDiscoBD.git
 2. Abre Visual Studio 2022
-3. Click en **Crear un proyecto nuevo**
-4. Selecciona **Aplicación de consola (C++)**
-5. En ubicación pon la carpeta donde clonaste el repo
-6. Nombre del proyecto: **SimuladorDiscoBD**
-7. Una vez creado, reemplaza el `main.cpp` con los archivos del repositorio:
-   - `Disco.h` → Archivos de encabezado
-   - `Disco_funciones.h` → Archivos de encabezado
-   - `Disco.cpp` → Archivos de origen
-   - `SimuladorDiscoBD.cpp` → reemplaza el main.cpp existente
-8. Compila y ejecuta con **Ctrl + F5**
+3. Archivo → Abrir → Proyecto/Solución
+4. Busca y abre el archivo `SimuladorDiscoBD.vcxproj` dentro de la carpeta clonada
+5. Compila y ejecuta con Ctrl + F5
 
 ## Funcionalidades actuales (Avance 2)
 - Configuración del disco (platos, pistas, sectores, capacidad)
