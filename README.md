@@ -21,12 +21,6 @@ bootstrap-vcpkg.bat
 
 vcpkg integrate install
 
-vcpkg install sfml:x64-windows
-
-vcpkg install imgui-sfml:x64-windows
-
-Esto puede tardar varios minutos.
-
 ## Instalar SFML e ImGui
 
 En el mismo Developer Command Prompt ejecuta:
