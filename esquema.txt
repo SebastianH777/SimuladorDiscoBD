@@ -1,0 +1,10 @@
+CREATE TABLE estudiante (
+    id INT,
+    nombre VARCHAR(50),
+    apellido VARCHAR(50),
+    edad INT,
+    peso FLOAT,
+    fecha_nacimiento VARCHAR(12),
+    correo VARCHAR(60),
+    activo BOOLEAN
+);

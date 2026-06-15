@@ -190,7 +190,7 @@ int main() {
             }
             else {
                 ImGui::Text("Desde:"); ImGui::InputText("##desde", buf_desde, sizeof(buf_desde));
-                ImGui::Text("hasta:"); ImGui::InputText("##hasta", buf_hasta, sizeof(buf_hasta));
+                ImGui::Text("Hasta:"); ImGui::InputText("##hasta", buf_hasta, sizeof(buf_hasta));
                 if (ImGui::Button("Buscar Rango", ImVec2(-1, 30))) {
                     resultados_busqueda = buscar_rango(indice, esquema, col_seleccionada, buf_desde, buf_hasta);
                     busqueda_realizada = true;
