@@ -1,6 +1,0 @@
-id,nombre,apellido,edad,peso,fecha_nacimiento,correo,activo
-1,Carlos,Mendoza,22,68.5,2002-03-15,carlos@email.com,true
-2,Ana,Torres,25,55.0,1999-07-20,ana@email.com,true
-3,Luis,Paredes,19,72.3,2005-01-10,luis@email.com,false
-4,Maria,Quispe,30,60.1,1994-11-05,maria@email.com,true
-5,Jose,Huanca,21,80.0,2003-06-18,jose@email.com,true
