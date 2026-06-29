@@ -82,15 +82,11 @@ ResultadoTXT cargar_esquema_sql(const std::string& ruta) {
     }
 
     // Leer todo el contenido
-    std::string contenido((std::istreambuf_iterator<char>(archivo)),
-                           std::istreambuf_iterator<char>());
+    std::string contenido((std::istreambuf_iterator<char>(archivo)),std::istreambuf_iterator<char>());
 
     // Quitar BOM UTF-8
-    if (contenido.size() >= 3 &&
-        (unsigned char)contenido[0] == 0xEF &&
-        (unsigned char)contenido[1] == 0xBB &&
-        (unsigned char)contenido[2] == 0xBF)
-        contenido = contenido.substr(3);
+    if (contenido.size() >= 3 && (unsigned char)contenido[0] == 0xEF && (unsigned char)contenido[1] == 0xBB && 
+        (unsigned char)contenido[2] == 0xBF) contenido = contenido.substr(3);
 
     std::string upper = to_upper(contenido);
 
@@ -148,8 +144,7 @@ ResultadoTXT cargar_esquema_sql(const std::string& ruta) {
             col.tipo         = 'I';
             col.tamano_bytes = 4;
 
-        } else if (tipo_upper == "FLOAT" || tipo_upper == "DOUBLE" ||
-                   tipo_upper == "REAL"  || tipo_upper == "DECIMAL" ||
+        } else if (tipo_upper == "FLOAT" || tipo_upper == "DOUBLE" || tipo_upper == "REAL"  || tipo_upper == "DECIMAL" ||
                    tipo_upper.find("NUMERIC") != std::string::npos) {
             col.tipo         = 'F';
             col.tamano_bytes = 4;
@@ -239,10 +234,7 @@ ResultadoCSV cargar_csv(const std::string& ruta) {
         return res;
     }
     // Quitar BOM
-    if (linea.size() >= 3 &&
-        (unsigned char)linea[0] == 0xEF &&
-        (unsigned char)linea[1] == 0xBB &&
-        (unsigned char)linea[2] == 0xBF)
+    if (linea.size() >= 3 && (unsigned char)linea[0] == 0xEF && (unsigned char)linea[1] == 0xBB && (unsigned char)linea[2] == 0xBF)
         linea = linea.substr(3);
 
     // Detectar si la primera linea es cabecera (tiene texto no numerico)

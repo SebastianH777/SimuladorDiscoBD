@@ -2,9 +2,9 @@
 #include "Disco.h"
 #include "Esquema.h"
 #include "disco_binario.h"
+#include "AVL.h"
 #include <string>
 #include <vector>
-#include <map>
 
 // ============================================================
 //  RESULTADO DE BUSQUEDA
@@ -24,15 +24,43 @@ struct ResultadoBusqueda {
 // ============================================================
 
 struct IndiceColumna {
-    char tipo; // 'I', 'F', 'C', 'B'
-    std::map<std::string, std::vector<Sector*>> idx_str;
-    std::map<int,         std::vector<Sector*>> idx_int;
-    std::map<double,      std::vector<Sector*>> idx_flt;
+    char tipo = '\0';
+
+    AVL<int>         avl_int;
+    AVL<double>      avl_flt;
+    AVL<std::string> avl_str;
+
+    Node<int>* root_int = nullptr;
+    Node<double>* root_flt = nullptr;
+    Node<std::string>* root_str = nullptr;
+
+    IndiceColumna() = default;
+    IndiceColumna(const IndiceColumna&) = delete;
+    IndiceColumna& operator=(const IndiceColumna&) = delete;
+    IndiceColumna(IndiceColumna&&) = default;
+    IndiceColumna& operator=(IndiceColumna&&) = default;
 };
 
 struct Indice {
     std::vector<IndiceColumna> columnas;
     bool vacio() const { return columnas.empty(); }
+
+    // Deshabilitar copia
+    Indice() = default;
+    Indice(const Indice&) = delete;
+    Indice& operator=(const Indice&) = delete;
+
+    // Habilitar movimiento
+    Indice(Indice&&) = default;
+    Indice& operator=(Indice&&) = default;
+
+    ~Indice() {
+        for (auto& ic : columnas) {
+            ic.avl_int.liberar(ic.root_int);
+            ic.avl_flt.liberar(ic.root_flt);
+            ic.avl_str.liberar(ic.root_str);
+        }
+    }
 };
 
 // ============================================================
@@ -93,13 +121,13 @@ Indice construir_indice(Disco& disco, const Esquema& esquema) {
                         IndiceColumna& ic = idx.columnas[c];
                         try {
                             if (ic.tipo == 'I')
-                                ic.idx_int[std::stoi(vals[c])].push_back(&sec);
+                                ic.avl_int.insertar(std::stoi(vals[c]), &sec, ic.root_int);
                             else if (ic.tipo == 'F')
-                                ic.idx_flt[std::stod(vals[c])].push_back(&sec);
+                                ic.avl_flt.insertar(std::stod(vals[c]), &sec, ic.root_flt);
                             else
-                                ic.idx_str[vals[c]].push_back(&sec);
+                                ic.avl_str.insertar(vals[c], &sec, ic.root_str);
                         } catch (...) {
-                            ic.idx_str[vals[c]].push_back(&sec); // fallback
+                            ic.avl_str.insertar(vals[c], &sec, ic.root_str); // fallback
                         }
                     }
                 }
@@ -134,24 +162,28 @@ std::vector<ResultadoBusqueda> buscar_exacto(
 {
     std::vector<ResultadoBusqueda> res;
     if (col < 0 || col >= (int)indice.columnas.size()) return res;
-    const IndiceColumna& ic = indice.columnas[col];
 
-    auto agregar = [&](const std::vector<Sector*>& secs) {
-        for (Sector* s : secs) res.push_back(sector_a_resultado(s, esquema));
-    };
+    // Necesita ser no-const para llamar al AVL
+    IndiceColumna& ic = const_cast<IndiceColumna&>(indice.columnas[col]);
+
+    std::vector<Sector*>* sectores = nullptr;
 
     try {
-        if (ic.tipo == 'I') {
-            auto it = ic.idx_int.find(std::stoi(valor));
-            if (it != ic.idx_int.end()) agregar(it->second);
-        } else if (ic.tipo == 'F') {
-            auto it = ic.idx_flt.find(std::stod(valor));
-            if (it != ic.idx_flt.end()) agregar(it->second);
-        } else {
-            auto it = ic.idx_str.find(valor);
-            if (it != ic.idx_str.end()) agregar(it->second);
-        }
-    } catch (...) {}
+        if (ic.tipo == '\0') return res;
+        if (ic.tipo == 'I')
+            sectores = ic.avl_int.buscar(std::stoi(valor), ic.root_int);
+        else if (ic.tipo == 'F')
+            sectores = ic.avl_flt.buscar(std::stod(valor), ic.root_flt);
+        else
+            sectores = ic.avl_str.buscar(valor, ic.root_str);
+    }
+    catch (...) { return res; }
+
+    if (!sectores) return res;
+
+    for (Sector* s : *sectores)
+        res.push_back(sector_a_resultado(s, esquema));
+
     return res;
 }
 
@@ -168,24 +200,23 @@ std::vector<ResultadoBusqueda> buscar_rango(
 {
     std::vector<ResultadoBusqueda> res;
     if (col < 0 || col >= (int)indice.columnas.size()) return res;
-    const IndiceColumna& ic = indice.columnas[col];
 
-    auto agregar_rango = [&](auto& mapa, auto lo, auto hi) {
-        // lower_bound y upper_bound usan el tipo nativo del map (int, double o string)
-        auto it_lo = mapa.lower_bound(lo);
-        auto it_hi = mapa.upper_bound(hi);
-        for (auto it = it_lo; it != it_hi; ++it)
-            for (Sector* s : it->second)
-                res.push_back(sector_a_resultado(s, esquema));
-    };
+    IndiceColumna& ic = const_cast<IndiceColumna&>(indice.columnas[col]);
+
+    std::vector<Sector*> sectores;
 
     try {
         if (ic.tipo == 'I')
-            agregar_rango(ic.idx_int, std::stoi(desde), std::stoi(hasta));
+            ic.avl_int.buscar_rango(std::stoi(desde), std::stoi(hasta), ic.root_int, sectores);
         else if (ic.tipo == 'F')
-            agregar_rango(ic.idx_flt, std::stod(desde), std::stod(hasta));
+            ic.avl_flt.buscar_rango(std::stod(desde), std::stod(hasta), ic.root_flt, sectores);
         else
-            agregar_rango(ic.idx_str, desde, hasta);
-    } catch (...) {}
+            ic.avl_str.buscar_rango(desde, hasta, ic.root_str, sectores);
+    }
+    catch (...) { return res; }
+
+    for (Sector* s : sectores)
+        res.push_back(sector_a_resultado(s, esquema));
+
     return res;
 }

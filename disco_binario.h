@@ -41,12 +41,13 @@ struct EscritorSectores {
         while (escrito < n) {
             int espacio = sector_actual->capacidad_bytes - offset;
             if (espacio == 0) {
-                if (!siguiente_sector_libre(sector_actual)) return false;
+                Sector* prev = sector_actual;
+                if (!siguiente_sector_libre(prev)) return false;
                 espacio = sector_actual->capacidad_bytes;
             }
             int a = std::min(espacio, n - escrito);
             std::memcpy(sector_actual->datos + offset, src + escrito, a);
-            offset  += a;
+            offset += a;
             escrito += a;
         }
         return true;
@@ -68,10 +69,7 @@ static bool parse_bool(const std::string& val) {
 //  ESCRITURA BINARIA DE UN REGISTRO
 // ============================================================
 
-void escribir_registro_binario(Disco& disco,
-                               const Esquema& esquema,
-                               const std::vector<std::string>& valores)
-{
+void escribir_registro_binario(Disco& disco, const Esquema& esquema, const std::vector<std::string>& valores) {
     if (valores.size() < esquema.columnas.size())
         throw std::invalid_argument("Faltan valores para algunas columnas.");
 
